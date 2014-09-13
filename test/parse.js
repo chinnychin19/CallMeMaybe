@@ -14,7 +14,6 @@ function makeJSON(text) {
     var pre = pFor > pIf ? pFor : pIf;
 
     var first = text.substring(pre, index+7);
-    console.log("first: "+first);
     var key = first.substring(first.length-1);
     obj[key] = [first, null];
 
@@ -24,7 +23,6 @@ function makeJSON(text) {
         if (text.indexOf('press') < 0) break;
         re = /^(.*?)press(\s)+(\w+)/;
         var result = text.match(re);
-        console.log("next: "+result[0]);
 
         var key = result[0].substring(6+result[0].indexOf('press '));
         obj[key] = [result[0], null];
