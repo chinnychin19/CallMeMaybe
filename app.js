@@ -117,7 +117,7 @@ app.get('/twiml.xml', function(req, res){
   if (req.query.tonesSoFar && req.query.tonesSoFar.length > 0){
     play = '<Play digits="ww' + req.query.tonesSoFar.split('').join('ww') + '"> </Play>';
   } else {
-    return res.send(400).end();
+    play = '';
   }
 
   if (!req.query.number || !req.query.name) {
