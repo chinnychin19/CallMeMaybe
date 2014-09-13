@@ -179,7 +179,7 @@ function handleTwimlRequest(req, res) {
   });
 
   var output = '<?xml version="1.0" encoding="UTF-8"?><Response>' + play +
-  '<Record maxLength="60" timeout="4" transcribe="true" transcribeCallback="' +
+  '<Record maxLength="60" timeout="2" transcribe="true" transcribeCallback="' +
   xmlEscape(callbackUrl) + '" action="' + xmlEscape(actionUrl) + '"/></Response>';
   console.log(output);
   res.send(output);
