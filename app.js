@@ -129,10 +129,10 @@ app.get('/number/:number', function(req, res) {
       res.status(404).send('Not found');
       return console.log(err || 'company not found');
     }
-    console.log(company);
-    company.treeString = JSON.parse(company.treeString);
-    console.log(company);
-    res.send(company);
+    var obj = company.toObject();
+    obj.treeString = JSON.parse(obj.treeString);
+    console.log(obj);
+    res.send(obj);
   })
 });
 
