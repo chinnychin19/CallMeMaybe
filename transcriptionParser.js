@@ -1,10 +1,10 @@
 var fs = require('fs');
 
-var text = fs.readFileSync('in.in').toString();
+// var text = fs.readFileSync('in.in').toString();
 
-makeJSON(text);
+// makeJSON(text);
 
-function makeJSON(text) {
+exports.parse = function parse(text) {
     var obj = {};
 
     var index = text.indexOf('press');
