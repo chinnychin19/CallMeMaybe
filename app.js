@@ -59,6 +59,42 @@ app.get('/retrieve/:number', function(req, res) {
 
 
 
+// Query params: tonesSoFar, number, name
+app.get('/twiml.xml', function(req, res){
+  var play;
+  if (req.query.tonesSoFar && req.query.tonesSoFar.length > 0){
+    play = '<Play digits="ww' + req.query.tonesSoFar.split('').join('ww') + '"> </Play>';
+  } else {
+    return res.send(400).end();
+  }
+
+  if (!req.query.number || !req.query.name) {
+    return res.send(400).end();
+  }
+
+  var callbackUrl = url.format({
+    host: req.headers.host,
+    protocol: 'http',
+    pathname: 'transcribe',
+    query: {
+      tonesSoFar: req.query.tonesSoFar,
+      number: req.query.number,
+      name: req.query.name
+    }
+  });
+
+  var actionUrl = url.format({
+    host: req.headers.host,
+    protocol: 'http',
+    pathname: 'twiml.xml',
+    query: req.query
+  });
+
+  var output = '<?xml version="1.0" encoding="UTF-8"?><Response>' + play +
+  '<Record maxLength="30" timeout="4" transcribe="true" transcribeCallback="' +
+  callbackUrl + '" action="' + actionUrl + '"/></Response>';
+  res.send(output);
+});
 
 var port = process.env.PORT || 3000;
 app.listen(port);
