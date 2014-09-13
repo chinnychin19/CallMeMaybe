@@ -24,6 +24,8 @@ db.once('open', function callback () {
     // we're golden
 });
 
+var CompanyModel = mongoose.model('Company', Company);
+
 var requestTranscription = function(name, number, tonesSoFar, host) {
   console.log(host);
   var theUrl = url.format({
@@ -117,12 +119,28 @@ app.get('/scrape', function(req, res) {
     res.send("scraping "+req.query.number + " with tones so far: "+ req.query.tonesSoFar);
 });
 
-app.get('/retrieve/:number', function(req, res) {
-    res.send("TODO: return object from db");
+app.get('/number', function(req, res) {
+  CompanyModel.find({}, function(err, companies) {
+    if (err) {
+      res.status(404).send('Not found');
+      return console.log(err);
+    }
+    console.log(companies);
+    res.send(companies);
+  })
 });
 
-
-
+app.get('/number/:number', function(req, res) {
+  console.log('number: ' + req.params.number);
+  CompanyModel.findOne({number: req.params.number}, function(err, company) {
+    if (err) {
+      res.status(404).send('Not found');
+      return console.log(err);
+    }
+    console.log(company);
+    res.send(company);
+  })
+});
 
 
 // Query params: tonesSoFar, number, name
@@ -164,4 +182,6 @@ app.get('/twiml.xml', function(req, res){
 });
 
 var port = process.env.PORT || 3000;
-app.listen(port);
+var server = app.listen(3000, function() {
+  console.log('Listening on port %d', server.address().port);
+});
