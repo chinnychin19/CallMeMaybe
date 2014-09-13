@@ -67,17 +67,12 @@ var postTranscription = function(text, name, number, tonesSoFar) {
             number: number,
             treeString: JSON.stringify(parseResult)
         });
-        comp.save(function (err, comp) {
-            if (err) {
-                return console.log(err);
-            }
-        });
+        comp.save();
     } else {
-        Company.find({number: number}, function(err, comps) {
+        Company.findOne({number: number}, function(err, comp) {
             if (err) {
                 return console.log(err);
             }
-            var comp = comps[0];
             var origTree = JSON.parse(comp.treeString);
             var tones = tonesSoFar.split('');
             var arr = origTree[tones[0]];
@@ -88,11 +83,7 @@ var postTranscription = function(text, name, number, tonesSoFar) {
             }
             arr[1] = parseResult;
             comp.treeString = JSON.stringify(origTree);
-            comp.save(function (err, comp) {
-                if (err) {
-                    return console.log(err);
-                }
-            });
+            comp.save();
         });
     }
 }
