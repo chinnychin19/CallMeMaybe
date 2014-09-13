@@ -3,6 +3,7 @@ var bodyParser = require('body-parser');
 var twilioClient = require('twilio')(
   process.env.TWILIO_SID, 
   process.env.TWILIO_AUTH_TOKEN);
+var mongoose = require('mongoose');
 var twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 var url = require('url');
 var transcriptionParser = require("./transcriptionParser.js");
@@ -20,7 +21,7 @@ var db = mongoose.connection;
 
 db.once('open', function callback () {
     // we're golden
-}
+});
 
 var requestTranscription = function(name, number, tonesSoFar, host) {
   console.log(host);
