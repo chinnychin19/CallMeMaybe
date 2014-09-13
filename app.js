@@ -15,7 +15,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-mongoose.connect(process.env.MONGOLAB_URI);
+var MONGOLAB_URI="mongodb://test:test@ds035750.mongolab.com:35750/call_me_maybe"
+mongoose.connect(MONGOLAB_URI);
 
 var db = mongoose.connection;
 
