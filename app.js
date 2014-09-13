@@ -56,9 +56,10 @@ var requestTranscription = function(name, number, tonesSoFar, host) {
 
 
 var postTranscription = function(text, name, number, tonesSoFar) {
-        var treeString = JSON.stringify(transcriptionParser.parse(text));
+    var treeString = JSON.stringify(transcriptionParser.parse(text));
+    console.log(treeString);
 
-        if (!!!tonesSoFar) {
+    if (!!!tonesSoFar) {
         var comp = new Company({
             name: name,
             number: number,
