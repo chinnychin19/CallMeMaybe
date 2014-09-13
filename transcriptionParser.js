@@ -32,7 +32,7 @@ exports.parse = function parse(text) {
     var obj = {};
     
     // Represents numbers 0-9 spelt out
-    var re_word_num = new RegExp(/zero|one|two|three|four|five|six|seven|eight|nine|ten/);
+    var re_word_num = new RegExp(/zero|one|two|three|four|five|six|seven|eight|nine/);
     // 0-9
     var re_num_num = new RegExp(/[0-9]/);
     //Either of the above
@@ -74,20 +74,20 @@ exports.parse = function parse(text) {
     return obj;
 }
 
-var text = "(Wendy?) and where "+
-"if you know your party's 5 digit extension number or access the company directory by last name please press the # key "+
-"for licensing services and accounts press 1 "+
-"for sales press 2 "+
-"for contract renewals press 3 "+
-"for technical support press 4 "+
-"for educational and consulting services press 5 "+
-"for Richard to pay and expense reimbursements press 6 "+
-"for accounts receivable press 7 to talk to our customer care.";
+// var text = "(Wendy?) and where "+
+// "if you know your party's 5 digit extension number or access the company directory by last name please press the # key "+
+// "for licensing services and accounts press 1 "+
+// "for sales press 2 "+
+// "for contract renewals press 3 "+
+// "for technical support press 4 "+
+// "for educational and consulting services press 5 "+
+// "for Richard to pay and expense reimbursements press 6 "+
+// "for accounts receivable press 7 to talk to our customer care.";
 
 
-var text = "You for calling me where if you know your party's 5 digit extension number or access the company directory by last name please press the # key for licensing services and accounts press 1 for sales press 2 for contract renewals press 3 for technical support press 4 for educational and consulting services press 5 for Richard to pay and expense reimbursement press 6 for accounts receivable press 7 to talk to our customer care representative please press 0 if you would like to repeat these options press nine we're continue to stay on the line."
+// var text = "You for calling me where if you know your party's 5 digit extension number or access the company directory by last name please press the # key for licensing services and accounts press 1 for sales press 2 for contract renewals press 3 for technical support press 4 for educational and consulting services press 5 for Richard to pay and expense reimbursement press 6 for accounts receivable press 7 to talk to our customer care representative please press 0 if you would like to repeat these options press nine we're continue to stay on the line."
 
-console.log(exports.parse(text));
+// console.log(exports.parse(text));
 
 
 
