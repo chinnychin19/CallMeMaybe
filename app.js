@@ -15,10 +15,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
-var requestTranscription = function(name, number, tonesSoFar, hostname) {
-  console.log(hostname);
+var requestTranscription = function(name, number, tonesSoFar, host) {
+  console.log(host);
   var theUrl = url.format({
-        hostname: hostname,
+        host: host,
         pathname: "twiml.xml",
         protocol: 'http',
         query: {
