@@ -1,4 +1,5 @@
-var fs = require('fs');
+var LEAF_NODE = "LEAF_NODE";
+exports.LEAF_NODE = LEAF_NODE;
 
 var keyMap = {
     1:1,
@@ -46,29 +47,36 @@ exports.parse = function parse(text) {
 
     //var re = /press\s(([0-9])|the\s(\#)\skey)/;
     var result = text.match(re);
+    if (result == null) {
+        return LEAF_NODE;
+    }
+
     var end = result["index"] + result[0].length;
     var prefix = text.substring(0, end);
     var pFor = prefix.lastIndexOf('for');
     var pIf = prefix.lastIndexOf('if');
     var start = pFor > pIf ? pFor : pIf;
 
-    var first = text.substring(start, end);
+    var optionMsg = text.substring(start, end);
     text = text.substring(end).trim();
     var key = result[2] || result[3];
-    obj[keyMap[key]] = [first, null];
+    obj[keyMap[key]] = [optionMsg, null];
 
     while (text.length > 0) {
-        if (text.indexOf('press') < 0) break;
-        re = /^(.*?)press(\s)+(\w+)/;
         var result = text.match(re);
+        if (result == null) {
+            return obj;
+        }
+        
+        var optionMsg = text.substring(0, result['index'] + result[0].length);
 
-        var key = result[0].substring(6+result[0].indexOf('press '));
+        var key = result[2] || result[3];
         if(!!obj[key]) {
             return obj;
         }
-        obj[keyMap[key]] = [result[0], null];
+        obj[keyMap[key]] = [optionMsg, null];
 
-        text = text.substring(result['index']+result[0].length).trim();
+        text = text.substring(result['index'] + result[0].length).trim();
     }
 
     return obj;
