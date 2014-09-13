@@ -137,8 +137,18 @@ app.get('/number/:number', function(req, res) {
 });
 
 
+// For some reason, twilio might GET or POST for this...
 // Query params: tonesSoFar, number, name
 app.get('/twiml.xml', function(req, res){
+    handleTwimlRequest(req, res);
+});
+
+// Query params: tonesSoFar, number, name
+app.post('/twiml.xml', function(req, res){
+    handleTwimlRequest(req, res);
+});
+
+function handleTwimlRequest(req, res) {
   var play;
   if (req.query.tonesSoFar && req.query.tonesSoFar.length > 0){
     play = '<Play digits="ww' + req.query.tonesSoFar.split('').join('ww') + '"> </Play>';
@@ -173,7 +183,7 @@ app.get('/twiml.xml', function(req, res){
   xmlEscape(callbackUrl) + '" action="' + xmlEscape(actionUrl) + '"/></Response>';
   console.log(output);
   res.send(output);
-});
+}
 
 var port = process.env.PORT || 3000;
 var server = app.listen(port, function() {
