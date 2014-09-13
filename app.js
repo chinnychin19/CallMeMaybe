@@ -15,19 +15,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 
-var requestTranscription = function(name, number, tonesSoFar) {
-  twilioClient.calls.create({
-      from: twilioNumber,
-      to: number, //  automated number
-      url: url.format({
-        hostname: 'guarded-retreat-7641.herokuapp.com',
+var requestTranscription = function(name, number, tonesSoFar, hostname) {
+  console.log(hostname);
+  var theUrl = url.format({
+        hostname: hostname,
+        pathname: "twiml.xml",
         protocol: 'http',
         query: {
           tonesSoFar: tonesSoFar,
           number: number,
           name: name
         }
-      }),
+      });
+  console.log("URL: "+theUrl);
+  twilioClient.calls.create({
+      from: twilioNumber,
+      to: number, //  automated number
+      url: theUrl,
       record: "true",
       method: "GET",
       fallbackMethod: "GET",
@@ -43,62 +47,64 @@ var requestTranscription = function(name, number, tonesSoFar) {
 
 
 var postTranscription = function(text, name, number, tonesSoFar) {
-		var treeString = JSON.stringify(transcriptionParser.parse(text));
+        var treeString = JSON.stringify(transcriptionParser.parse(text));
 
-		if (!!!tonesSoFar) {
-		var comp = new Company({
-			name: name,
-			number: number,
-			treeString: treeString
-		});
-		comp.save(function (err, comp) {
-			if (err) {
-				return console.log(err);
-			}
-		});
-	} else {
-		Company.find({number: number}, function(err, comps) {
-			if (err) {
-				return console.log(err);
-			}
-			var comp = comps[0];
-			var origTree = JSON.parse(comp.treeString);
-			var tones = tonesSoFar.split('');
-			var arr = comp[tones[0]];
-			var index = 1;
-			while(arr[0] == null) {
-				arr = arr[1][tones[index]];
-				index++;
-			}
-			arr[1] = treeString;
-			comp.save(function (err, comp) {
-				if (err) {
-					return console.log(err);
-				}
-			});
-	}
+        if (!!!tonesSoFar) {
+        var comp = new Company({
+            name: name,
+            number: number,
+            treeString: treeString
+        });
+        comp.save(function (err, comp) {
+            if (err) {
+                return console.log(err);
+            }
+        });
+    } else {
+        Company.find({number: number}, function(err, comps) {
+            if (err) {
+                return console.log(err);
+            }
+            var comp = comps[0];
+            var origTree = JSON.parse(comp.treeString);
+            var tones = tonesSoFar.split('');
+            var arr = comp[tones[0]];
+            var index = 1;
+            while(arr[0] == null) {
+                arr = arr[1][tones[index]];
+                index++;
+            }
+            arr[1] = treeString;
+            comp.save(function (err, comp) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+        });
+    }
 }
 
 // queries: tonesSoFar, number, name
 // TODO: parse the transcribed text into an object and update object in db
 // Then continue scraping
 app.post('/transcribe', function(req, res) {
-	var body = req.body;
-	var transcription = body.TranscriptionText;
-	postTranscription(transcription, req.query.name, req.query.number, req.query.tonesSoFar,
-		function(res, name, number, tonesSoFar) {
-			res.send("updated on db!")
-		});
+    var body = req.body;
+    var transcription = body.TranscriptionText;
+    postTranscription(transcription, req.query.name, req.query.number, req.query.tonesSoFar,
+        function(res, name, number, tonesSoFar) {
+            res.send("updated on db!")
+        });
 });
 
 // queries: tonesSoFar, name, number
 app.get('/scrape', function(req, res) {
-	requestTranscription(req.query.name, req.query.number, req.query.tonesSoFar);
-	res.send("scraping "+req.query.number + " with tones so far: "+ tonesSoFar);
+    console.log("headers.host: "+req.headers.host);
+    requestTranscription(req.query.name, req.query.number, req.query.tonesSoFar, req.headers.host);
+    res.send("scraping "+req.query.number + " with tones so far: "+ req.query.tonesSoFar);
 });
 
 app.get('/retrieve/:number', function(req, res) {
-	res.send("TODO: return object from db");
+    res.send("TODO: return object from db");
 });
 
 
@@ -139,6 +145,7 @@ app.get('/twiml.xml', function(req, res){
   var output = '<?xml version="1.0" encoding="UTF-8"?><Response>' + play +
   '<Record maxLength="30" timeout="4" transcribe="true" transcribeCallback="' +
   callbackUrl + '" action="' + actionUrl + '"/></Response>';
+  console.log(output);
   res.send(output);
 });
 
