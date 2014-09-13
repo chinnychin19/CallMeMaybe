@@ -125,6 +125,9 @@ app.get('/number', function(req, res) {
       res.status(404).send('Not found');
       return console.log(err);
     }
+    companies.forEach(function(company) {
+      company.treeString = JSON.parse(company.treeString);
+    });
     console.log(companies);
     res.send(companies);
   })
@@ -137,6 +140,7 @@ app.get('/number/:number', function(req, res) {
       res.status(404).send('Not found');
       return console.log(err);
     }
+    company.treeString = JSON.parse(company.treeString);
     console.log(company);
     res.send(company);
   })
