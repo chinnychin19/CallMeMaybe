@@ -96,6 +96,7 @@ var postTranscription = function(text, name, number, tonesSoFar) {
 // TODO: parse the transcribed text into an object and update object in db
 // Then continue scraping
 app.post('/transcribe', function(req, res) {
+    console.log("!!!!~~~~~ CALLING TRANSCRIBE FUNCTION");
     var body = req.body;
     var transcription = body.TranscriptionText;
     postTranscription(transcription, req.query.name, req.query.number, req.query.tonesSoFar,
