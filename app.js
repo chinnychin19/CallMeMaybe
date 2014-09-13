@@ -6,6 +6,7 @@ var twilioClient = require('twilio')(
 var mongoose = require('mongoose');
 var twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 var url = require('url');
+var xmlEscape = require('xml-escape');
 var transcriptionParser = require("./transcriptionParser.js");
 var Company = require('./schema.js').Company;
 
@@ -153,7 +154,7 @@ app.get('/twiml.xml', function(req, res){
 
   var output = '<?xml version="1.0" encoding="UTF-8"?><Response>' + play +
   '<Record maxLength="30" timeout="4" transcribe="true" transcribeCallback="' +
-  callbackUrl + '" action="' + actionUrl + '"/></Response>';
+  xmlEscape(callbackUrl) + '" action="' + xmlEscape(actionUrl) + '"/></Response>';
   console.log(output);
   res.send(output);
 });

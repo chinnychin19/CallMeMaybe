@@ -10,7 +10,8 @@
     "body-parser": "^1.8.1",
     "express": "^4.9.0",
     "mongoose": "^3.8.16",
-    "twilio": "^1.7.0"
+    "twilio": "^1.7.0",
+    "xml-escape": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
