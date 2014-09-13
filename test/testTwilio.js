@@ -6,10 +6,12 @@ var twilioNumber = process.env.TWILIO_PHONE_NUMBER;
 //require the Twilio module and create a REST client 
 var client = require('twilio')(accountSid, authToken); 
  
+var tones = "2";
+
 client.calls.create({  
     from: twilioNumber,   
     to: "+18774869273", //  automated number
-    url: "http://maxwellslg.github.io/pennapps/callmemaybe.xml",
+    url: "http://guarded-retreat-7641.herokuapp.com/?q=" + tones,
     record: "true",
     method: "GET",
     fallbackMethod: "GET",

@@ -2,22 +2,37 @@ var fs = require('fs');
 
 var text = fs.readFileSync('in.in').toString();
 
-// var re = /(if|for)(.*?)press\s([0-9])/;
-var re = /(if|for)(((?!press).)*)press\s([0-9])/;
+makeJSON(text);
 
-var first = text.match(re);
+function makeJSON(text) {
+    var obj = {};
 
+    var index = text.indexOf('press');
+    var prefix = text.substring(0,index);
+    var pFor = prefix.lastIndexOf('for');
+    var pIf = prefix.lastIndexOf('if');
+    var pre = pFor > pIf ? pFor : pIf;
 
+    var first = text.substring(pre, index+7);
+    console.log("first: "+first);
+    var key = first.substring(first.length-1);
+    obj[key] = [first, null];
 
-console.log("first: "+first[0]);
+    text = text.substring(index+7).trim();
 
-text = text.substring(first["index"]+first[0].length).trim();
+    while (text.length > 0) {
+        if (text.indexOf('press') < 0) break;
+        re = /^(.*?)press(\s)+(\w+)/;
+        var result = text.match(re);
+        console.log("next: "+result[0]);
 
-while (text.length > 0) {
-	if (text.indexOf('press') < 0) break;
-	re = /^(.*?)press(\s)+(\w+)/;
-	var result = text.match(re);
-	console.log("next: "+result[0]);
-	text = text.substring(result['index']+result[0].length);
+        var key = result[0].substring(6+result[0].indexOf('press '));
+        obj[key] = [result[0], null];
+
+        text = text.substring(result['index']+result[0].length).trim();
+    }
+
+    console.log(obj);
+    return obj;
 }
 
