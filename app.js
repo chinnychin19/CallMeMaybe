@@ -57,16 +57,15 @@ var requestTranscription = function(name, number, tonesSoFar, host) {
 
 var postTranscription = function(text, name, number, tonesSoFar) {
     var parseResult = transcriptionParser.parse(text);
-    var treeString = transcriptionParser.LEAF_NODE == parseResult ? 
-        transcriptionParser.LEAF_NODE :
-        JSON.stringify(parseResult);
+    //var treeString = JSON.stringify(parseResult);
+    
     console.log(treeString);
 
     if (!!!tonesSoFar) {
         var comp = new Company({
             name: name,
             number: number,
-            treeString: treeString
+            treeString: JSON.stringify(parseResult)
         });
         comp.save(function (err, comp) {
             if (err) {
@@ -81,13 +80,14 @@ var postTranscription = function(text, name, number, tonesSoFar) {
             var comp = comps[0];
             var origTree = JSON.parse(comp.treeString);
             var tones = tonesSoFar.split('');
-            var arr = comp[tones[0]];
+            var arr = origTree[tones[0]];
             var index = 1;
-            while(arr[0] == null) {
+            while(arr[1] != null) {
                 arr = arr[1][tones[index]];
                 index++;
             }
-            arr[1] = treeString;
+            arr[1] = parseResult;
+            comp.treeString = JSON.stringify(origTree);
             comp.save(function (err, comp) {
                 if (err) {
                     return console.log(err);

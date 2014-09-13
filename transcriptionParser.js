@@ -1,6 +1,3 @@
-var LEAF_NODE = "LEAF_NODE";
-exports.LEAF_NODE = LEAF_NODE;
-
 var keyMap = {
     1:1,
     2:2,
@@ -48,7 +45,7 @@ exports.parse = function parse(text) {
     //var re = /press\s(([0-9])|the\s(\#)\skey)/;
     var result = text.match(re);
     if (result == null) {
-        return LEAF_NODE;
+        return {};
     }
 
     var end = result["index"] + result[0].length;
