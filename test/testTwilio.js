@@ -19,5 +19,7 @@ client.calls.create({
         console.log(err);
         throw err;
     }
-    console.log("Placing call..."); 
+    console.log("Placing call...");
+    console.log("call info:");
+    console.log(call);
 });

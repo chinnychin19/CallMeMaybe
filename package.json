@@ -1,0 +1,26 @@
+{
+  "name": "CallMeMaybe",
+  "version": "1.0.0",
+  "description": "PennApps Fall 2014",
+  "main": "app.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "twilio": "^1.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chinnychin19/CallMeMaybe.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chinnychin19/CallMeMaybe/issues"
+  },
+  "homepage": "https://github.com/chinnychin19/CallMeMaybe"
+}
