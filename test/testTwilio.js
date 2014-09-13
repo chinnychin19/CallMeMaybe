@@ -8,12 +8,12 @@ var client = require('twilio')(accountSid, authToken);
  
 client.calls.create({  
     from: twilioNumber,   
-    to: "7034855298",
-    url: "https://google.com",
+    to: "+18774869273", //  automated number
+    url: "http://maxwellslg.github.io/pennapps/callmemaybe.xml",
+    record: "true",
     method: "GET",
     fallbackMethod: "GET",
     statusCallbackMethod: "GET",
-    record: "false"
 }, function(err, call) { 
     if (err) {
         console.log(err);
