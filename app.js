@@ -61,8 +61,6 @@ var postTranscription = function(text, name, number, tonesSoFar) {
     var parseResult = transcriptionParser.parse(text);
     //var treeString = JSON.stringify(parseResult);
     
-    console.log(treeString);
-
     if (!!!tonesSoFar) {
         var comp = new Company({
             name: name,
