@@ -136,10 +136,11 @@ app.get('/number', function(req, res) {
 app.get('/number/:number', function(req, res) {
   console.log('number: ' + req.params.number);
   CompanyModel.findOne({number: req.params.number}, function(err, company) {
-    if (err) {
+    if (err || !company) {
       res.status(404).send('Not found');
-      return console.log(err);
+      return console.log(err || 'company not found');
     }
+    console.log(company);
     company.treeString = JSON.parse(company.treeString);
     console.log(company);
     res.send(company);
