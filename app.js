@@ -14,6 +14,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
+mongoose.connect(process.env.MONGOLAB_URI);
+
+var db = mongoose.connection;
+
+db.once('open', function callback () {
+    // we're golden
+}
 
 var requestTranscription = function(name, number, tonesSoFar, host) {
   console.log(host);
