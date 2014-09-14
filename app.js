@@ -39,6 +39,7 @@ var requestTranscription = function(name, number, tonesSoFar, host) {
           name: name
         }
       });
+  console.log(theUrl);
   twilioClient.calls.create({
       from: twilioNumber,
       to: number, //  automated number
@@ -76,6 +77,8 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
             if (err) {
                 return console.log(err);
             }
+            console.log("orig tree string:");
+            console.log(comp.treeString);
             var origTree = JSON.parse(comp.treeString);
             var tones = tonesSoFar.split('');
             var arr = origTree[tones[0]];
@@ -101,7 +104,7 @@ app.post('/transcribe', function(req, res) {
     var body = req.body;
     var transcription = body.TranscriptionText;
     postTranscription(transcription, req.query.name, req.query.number, req.query.tonesSoFar, req.headers.host);
-    //res.send("updating database");
+    res.send("updating database");
 });
 
 // queries: tonesSoFar, name, number
@@ -140,16 +143,14 @@ app.get('/number/:number', function(req, res) {
 });
 
 
-// For some reason, twilio might GET or POST for this...
 // Query params: tonesSoFar, number, name
 app.get('/twiml.xml', function(req, res){
     handleTwimlRequest(req, res);
 });
 
-// Query params: tonesSoFar, number, name
-app.post('/twiml.xml', function(req, res){
-    handleTwimlRequest(req, res);
-});
+app.post('/twiml.xml', function(req, res) {
+  res.status(200).send();
+})
 
 function handleTwimlRequest(req, res) {
   console.log("Twiml xml file requested");
@@ -184,7 +185,8 @@ function handleTwimlRequest(req, res) {
 
   var output = '<?xml version="1.0" encoding="UTF-8"?><Response>' + play +
   '<Record maxLength="60" timeout="2" transcribe="true" transcribeCallback="' +
-  xmlEscape(callbackUrl) + '" action="' + xmlEscape(actionUrl) + '"/></Response>';
+  xmlEscape(callbackUrl) + '" /></Response>';
+
   res.send(output);
 }
 
@@ -209,25 +211,27 @@ function tryExploreNext(host, name, number){
         object:object,
         depth: 0
       }];
+    console.log(queue);
 
     while(queue.length > 0){
+      console.log("cur:");
       var cur = queue.shift();
+      console.log(cur);
       if(cur.depth > MAX_SCRAPE_DEPTH){
         return;
       }
       if(cur.object == null){
-        // DO THE THING -- REQUEST THE TRANSCRIPT
-        requestTranscription(name, number, cur.tones, host);
+        console.log("DO THE THING -- REQUEST THE TRANSCRIPT");
+        return requestTranscription(name, number, cur.tones, host);
       }
-      for(var key in cur){
+      for(var key in cur.object){
         queue.push({
-          tones: cur.tones+key, 
-          object: cur[key][1],
+          tones: cur.tones+""+key, 
+          object: cur.object[key][1],
           depth: cur.depth+1
         });
       }
     }
-    //RETURN
-    return;
+    return; // redundant
   })
 }
