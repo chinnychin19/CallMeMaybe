@@ -156,7 +156,7 @@ function handleTwimlRequest(req, res) {
   console.log("Twiml xml file requested");
   var play;
   if (req.query.tonesSoFar && req.query.tonesSoFar.length > 0){
-    play = '<Play digits="ww' + req.query.tonesSoFar.split('').join('ww') + '"> </Play>';
+    play = '<Play digits="wwwwww' + req.query.tonesSoFar.split('').join('www') + '"> </Play>';
   } else {
     play = '';
   }
