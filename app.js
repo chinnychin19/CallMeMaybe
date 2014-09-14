@@ -9,6 +9,7 @@ var url = require('url');
 var xmlEscape = require('xml-escape');
 var transcriptionParser = require("./transcriptionParser.js");
 var Company = require('./schema.js').Company;
+var MAX_SCRAPE_DEPTH = 3;
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -57,7 +58,7 @@ var requestTranscription = function(name, number, tonesSoFar, host) {
 };
 
 
-var postTranscription = function(text, name, number, tonesSoFar) {
+var postTranscription = function(text, name, number, tonesSoFar, host) {
     var parseResult = transcriptionParser.parse(text);
     //var treeString = JSON.stringify(parseResult);
     
@@ -68,6 +69,7 @@ var postTranscription = function(text, name, number, tonesSoFar) {
             treeString: JSON.stringify(parseResult)
         });
         comp.save();
+        tryExploreNext(host, name, number); 
     } else {
         Company.findOne({number: number}, function(err, comp) {
             if (err) {
@@ -84,6 +86,7 @@ var postTranscription = function(text, name, number, tonesSoFar) {
             arr[1] = parseResult;
             comp.treeString = JSON.stringify(origTree);
             comp.save();
+            tryExploreNext(host, name, number); 
         });
     }
 }
@@ -95,10 +98,8 @@ app.post('/transcribe', function(req, res) {
     console.log("!!!!~~~~~ CALLING TRANSCRIBE FUNCTION");
     var body = req.body;
     var transcription = body.TranscriptionText;
-    postTranscription(transcription, req.query.name, req.query.number, req.query.tonesSoFar,
-        function(res, name, number, tonesSoFar) {
-            res.send("updated on db!")
-        });
+    postTranscription(transcription, req.query.name, req.query.number, req.query.tonesSoFar, req.headers.host);
+    res.send("updating database");
 });
 
 // queries: tonesSoFar, name, number
@@ -189,3 +190,42 @@ var port = process.env.PORT || 3000;
 var server = app.listen(port, function() {
   console.log('Listening on port %d', server.address().port);
 });
+
+
+function tryExploreNext(host, name, number){
+  //BFS
+  CompanyModel.findOne({number: number}, function(err, company) {
+    if (err || !company) {
+      return console.log(err || 'company not found');
+    }
+    console.log(company);
+    var object = JSON.parse(company.treeString);
+
+    //queue of object pointers
+    var queue = [{
+        tones:"", 
+        object:object,
+        depth: 0
+      }];
+
+    while(queue.length > 0){
+      var cur = queue.shift();
+      if(cur.depth > MAX_SCRAPE_DEPTH){
+        return;
+      }
+      if(cur.object == null){
+        // DO THE THING -- REQUEST THE TRANSCRIPT
+        requestTranscription(name, number, cur.tones, host);
+      }
+      for(var key in cur){
+        queue.push({
+          tones: cur.tones+key, 
+          object: cur[key][1],
+          depth: cur.depth+1
+        });
+      }
+    }
+    //RETURN
+    return;
+  })
+}
