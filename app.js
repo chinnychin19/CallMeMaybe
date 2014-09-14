@@ -62,15 +62,21 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
     //var treeString = JSON.stringify(parseResult);
     
     if (!!!tonesSoFar) {
-      console.log("CREATING NEW DOC IN MONGODB");
-        var comp = new Company({
-            name: name,
-            number: number,
-            treeString: JSON.stringify(parseResult)
-        });
-        comp.save(function(err, comp) {
-            // tryExploreNext(host, name, number);             
-        });
+      Company.find({number:number}, function(err, comps) {
+        if (comps.length == 0) { // Company not in DB yet
+          console.log("CREATING NEW DOC IN MONGODB");
+          var comp = new Company({
+              name: name,
+              number: number,
+              treeString: JSON.stringify(parseResult)
+          });
+          comp.save(function(err, comp) {
+              tryExploreNext(host, name, number);             
+          });
+        } else {
+          tryExploreNext(host, name, number);
+        }
+      });
     } else {
       console.log("UPDATING EXISTING DOC IN MONGODB");
         Company.findOne({number: number}, function(err, comp) {
@@ -82,15 +88,20 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
             var origTree = JSON.parse(comp.treeString);
             var tones = tonesSoFar.split('');
             var arr = origTree[tones[0]];
-            var index = 1;
+            var index = 0;
+            console.log('arr:');
+            console.log(arr);
+            console.log(tones);
             while(arr[1] != null) {
                 arr = arr[1][tones[index]];
                 index++;
+              console.log('arr:');
+              console.log(arr);
             }
             arr[1] = parseResult;
             comp.treeString = JSON.stringify(origTree);
             comp.save(function(err, comp) {
-                // tryExploreNext(host, name, number); 
+                tryExploreNext(host, name, number); 
             });
         });
     }
@@ -112,6 +123,12 @@ app.get('/scrape', function(req, res) {
     console.log("!!!!!!!~~~~~ scrape requested, with tones: "+req.query.tonesSoFar);
     requestTranscription(req.query.name, req.query.number, req.query.tonesSoFar, req.headers.host);
     res.send("scraping "+req.query.number + " with tones so far: "+ req.query.tonesSoFar);
+});
+
+app.get('/continue', function(req, res) {
+    console.log("!!!!!!!~~~~~ scrape continued");
+    tryExploreNext(req.headers.host, req.query.name, req.query.number);
+    res.send("scraping "+req.query.number);
 });
 
 app.get('/number', function(req, res) {
@@ -156,7 +173,8 @@ function handleTwimlRequest(req, res) {
   console.log("Twiml xml file requested");
   var play;
   if (req.query.tonesSoFar && req.query.tonesSoFar.length > 0){
-    play = '<Play digits="wwwwww' + req.query.tonesSoFar.split('').join('www') + '"> </Play>';
+    play = '<Play digits="wwwwwwwwwwwwwwwwwwwwww' + 
+        req.query.tonesSoFar.split('').join('www') + '"> </Play>';
   } else {
     play = '';
   }
