@@ -115,11 +115,14 @@ app.get('/number', function(req, res) {
       res.status(404).send('Not found');
       return console.log(err);
     }
+    ar = []
     companies.forEach(function(company) {
-      company.treeString = JSON.parse(company.treeString);
+      var obj = company.toObject();
+      obj.treeString = JSON.parse(obj.treeString);
+      ar.push(obj);
     });
-    console.log(companies);
-    res.send(companies);
+    console.log(ar);
+    res.send(ar);
   })
 });
 
@@ -130,10 +133,10 @@ app.get('/number/:number', function(req, res) {
       res.status(404).send('Not found');
       return console.log(err || 'company not found');
     }
-    console.log(company);
-    company.treeString = JSON.parse(company.treeString);
-    console.log(company);
-    res.send(company);
+    var obj = company.toObject();
+    obj.treeString = JSON.parse(obj.treeString);
+    console.log(obj);
+    res.send(obj);
   })
 });
 
