@@ -68,8 +68,9 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
             number: number,
             treeString: JSON.stringify(parseResult)
         });
-        comp.save();
-        tryExploreNext(host, name, number); 
+        comp.save(function(err, comp) {
+            tryExploreNext(host, name, number);             
+        });
     } else {
         Company.findOne({number: number}, function(err, comp) {
             if (err) {
@@ -85,8 +86,9 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
             }
             arr[1] = parseResult;
             comp.treeString = JSON.stringify(origTree);
-            comp.save();
-            tryExploreNext(host, name, number); 
+            comp.save(function(err, comp) {
+                tryExploreNext(host, name, number); 
+            });
         });
     }
 }
