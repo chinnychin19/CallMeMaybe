@@ -28,7 +28,7 @@ db.once('open', function callback () {
 var CompanyModel = mongoose.model('Company', Company);
 
 var requestTranscription = function(name, number, tonesSoFar, host) {
-  console.log(host);
+  console.log("Placing call... "+number+" x"+tonesSoFar);
   var theUrl = url.format({
         host: host,
         pathname: "twiml.xml",
@@ -39,7 +39,6 @@ var requestTranscription = function(name, number, tonesSoFar, host) {
           name: name
         }
       });
-  console.log("URL: "+theUrl);
   twilioClient.calls.create({
       from: twilioNumber,
       to: number, //  automated number
@@ -53,7 +52,6 @@ var requestTranscription = function(name, number, tonesSoFar, host) {
           console.log(err);
           throw err;
       }
-      console.log("Placing call...");
   });
 };
 
@@ -63,6 +61,7 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
     //var treeString = JSON.stringify(parseResult);
     
     if (!!!tonesSoFar) {
+      console.log("CREATING NEW DOC IN MONGODB");
         var comp = new Company({
             name: name,
             number: number,
@@ -72,6 +71,7 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
             tryExploreNext(host, name, number);             
         });
     } else {
+      console.log("UPDATING EXISTING DOC IN MONGODB");
         Company.findOne({number: number}, function(err, comp) {
             if (err) {
                 return console.log(err);
@@ -97,7 +97,7 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
 // TODO: parse the transcribed text into an object and update object in db
 // Then continue scraping
 app.post('/transcribe', function(req, res) {
-    console.log("!!!!~~~~~ CALLING TRANSCRIBE FUNCTION");
+    console.log("!!!!~~~~~ transcribe called with tones: "+req.query.tonesSoFar);
     var body = req.body;
     var transcription = body.TranscriptionText;
     postTranscription(transcription, req.query.name, req.query.number, req.query.tonesSoFar, req.headers.host);
@@ -106,7 +106,7 @@ app.post('/transcribe', function(req, res) {
 
 // queries: tonesSoFar, name, number
 app.get('/scrape', function(req, res) {
-    console.log("headers.host: "+req.headers.host);
+    console.log("!!!!!!!~~~~~ scrape requested, with tones: "+req.query.tonesSoFar);
     requestTranscription(req.query.name, req.query.number, req.query.tonesSoFar, req.headers.host);
     res.send("scraping "+req.query.number + " with tones so far: "+ req.query.tonesSoFar);
 });
@@ -123,13 +123,11 @@ app.get('/number', function(req, res) {
       obj.treeString = JSON.parse(obj.treeString);
       ar.push(obj);
     });
-    console.log(ar);
     res.send(ar);
   })
 });
 
 app.get('/number/:number', function(req, res) {
-  console.log('number: ' + req.params.number);
   CompanyModel.findOne({number: req.params.number}, function(err, company) {
     if (err || !company) {
       res.status(404).send('Not found');
@@ -137,7 +135,6 @@ app.get('/number/:number', function(req, res) {
     }
     var obj = company.toObject();
     obj.treeString = JSON.parse(obj.treeString);
-    console.log(obj);
     res.send(obj);
   })
 });
@@ -198,12 +195,12 @@ var server = app.listen(port, function() {
 
 
 function tryExploreNext(host, name, number){
+  console.log("!!!!!!~~~~~~~ tryExploreNext was called");
   //BFS
   CompanyModel.findOne({number: number}, function(err, company) {
     if (err || !company) {
       return console.log(err || 'company not found');
     }
-    console.log(company);
     var object = JSON.parse(company.treeString);
 
     //queue of object pointers
