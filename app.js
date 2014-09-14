@@ -132,7 +132,19 @@ app.get('/continue', function(req, res) {
 });
 
 app.get('/number', function(req, res) {
-  CompanyModel.find({}, function(err, companies) {
+  var searchQuery = req.query.searchQuery;
+  var query;
+  if (searchQuery) {
+    query = {
+      $or: [
+        {name: new RegExp(searchQuery, 'i')},
+        {number: new RegExp(searchQuery)}
+      ]
+    };
+  } else {
+    query = {};
+  }
+  CompanyModel.find(query, function(err, companies) {
     if (err) {
       res.status(404).send('Not found');
       return console.log(err);
