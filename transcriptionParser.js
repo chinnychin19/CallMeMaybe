@@ -59,7 +59,6 @@ exports.parse = function parse(text) {
     var key = result[2] || result[3];
     obj[keyMap[key]] = [optionMsg, null];
 
-    console.log("remaining: "+text);
 
     while (text.length > 0) {
         var result = text.match(re);

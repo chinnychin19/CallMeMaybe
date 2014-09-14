@@ -68,7 +68,7 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
             treeString: JSON.stringify(parseResult)
         });
         comp.save(function(err, comp) {
-            tryExploreNext(host, name, number);             
+            // tryExploreNext(host, name, number);             
         });
     } else {
       console.log("UPDATING EXISTING DOC IN MONGODB");
@@ -87,7 +87,7 @@ var postTranscription = function(text, name, number, tonesSoFar, host) {
             arr[1] = parseResult;
             comp.treeString = JSON.stringify(origTree);
             comp.save(function(err, comp) {
-                tryExploreNext(host, name, number); 
+                // tryExploreNext(host, name, number); 
             });
         });
     }
@@ -101,7 +101,7 @@ app.post('/transcribe', function(req, res) {
     var body = req.body;
     var transcription = body.TranscriptionText;
     postTranscription(transcription, req.query.name, req.query.number, req.query.tonesSoFar, req.headers.host);
-    res.send("updating database");
+    //res.send("updating database");
 });
 
 // queries: tonesSoFar, name, number
@@ -152,6 +152,7 @@ app.post('/twiml.xml', function(req, res){
 });
 
 function handleTwimlRequest(req, res) {
+  console.log("Twiml xml file requested");
   var play;
   if (req.query.tonesSoFar && req.query.tonesSoFar.length > 0){
     play = '<Play digits="ww' + req.query.tonesSoFar.split('').join('ww') + '"> </Play>';
@@ -184,7 +185,6 @@ function handleTwimlRequest(req, res) {
   var output = '<?xml version="1.0" encoding="UTF-8"?><Response>' + play +
   '<Record maxLength="60" timeout="2" transcribe="true" transcribeCallback="' +
   xmlEscape(callbackUrl) + '" action="' + xmlEscape(actionUrl) + '"/></Response>';
-  console.log(output);
   res.send(output);
 }
 
